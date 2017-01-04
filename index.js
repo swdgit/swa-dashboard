@@ -29,7 +29,9 @@ const fares = {
 var originAirport
 var destinationAirport
 var outboundDateString
+var outboundTimeOfDay = "ANYTIME"
 var returnDateString
+var returnTimeOfDay   = "ANYTIME"
 var adultPassengerCount
 var individualDealPrice
 var totalDealPrice
@@ -47,8 +49,14 @@ process.argv.forEach((arg, i, argv) => {
     case "--leave-date":
       outboundDateString = argv[i + 1]
       break
+    case "--leave-tod":
+      outboundTimeOfDay = argv[i + 1 ]
+      break
     case "--return-date":
       returnDateString = argv[i + 1]
+      break
+    case "--return-tod":
+      returnTimeOfDay = argv[i + 1]
       break
     case "--passengers":
       adultPassengerCount = argv[i + 1]
@@ -346,8 +354,8 @@ const fetch = () => {
       twoWayTrip: true,
       airTranRedirect: "",
       returnAirport: "RoundTrip",
-      outboundTimeOfDay: "ANYTIME",
-      returnTimeOfDay: "ANYTIME",
+      outboundTimeOfDay,
+      returnTimeOfDay,
       seniorPassengerCount: 0,
       fareType: "DOLLARS",
       originAirport,
@@ -468,7 +476,9 @@ dashboard.settings([
   `Origin airport: ${originAirport}`,
   `Destination airport: ${destinationAirport}`,
   `Outbound date: ${outboundDateString}`,
+  `Outbound Time: ${outboundTimeOfDay}`,
   `Return date: ${returnDateString}`,
+  `Return Time: ${returnTimeOfDay}`,
   `Passengers: ${adultPassengerCount}`,
   `Interval: ${pretty(interval * TIME_MIN)}`,
   `Individual deal price: ${individualDealPrice ? `<= \$${individualDealPrice}` : "disabled"}`,

@@ -8,12 +8,13 @@ I'm a lazy programmer who was tired of checking flight prices … and I really w
 to try out Twilio and [blessed](https://github.com/chjj/blessed/). ¯\\\_(ツ)\_/¯
 
 ## Installation
-Since I would rather not get in trouble for publishing this tool to npm, you can
-clone the repo locally and use `npm link` to use the executable.
+Since I would rather not get in trouble for publishing this tool to npm, you can clone the repo locally and use `npm link` to use the executable.
 ```
 cd wherever-you-cloned-it-to
 npm link
 ```
+
+When building the app, the sub module node-gyp has a dependency on Python 2 at this time. 
 
 If you recieve a ``SyntaxError: Unexpected token ...`` upon running the `swa` command, make sure you are running a version of node that supports ES6 syntax (5.11.0 and up). 
 
@@ -21,7 +22,7 @@ Under some circumstances, libxmljs may throw an error that looks like this:
 ```
 Error: Could not locate the bindings file. Tried:
  → /root/swa-dashboard/node_modules/libxmljs/build/xmljs.node
- ```
+```
 You can fix it and run `swa` successfully by rebuilding libxmljs manually:
 ```
 sudo npm install -g node-gyp
@@ -45,7 +46,9 @@ swa \
   --from 'DAL' \
   --to 'LGA' \
   --leave-date '11/01/2016' \
+  --leave-tod 'ANYTIME' \ (optional) ANYTIME is the default, BEFORE_NOON, NOON_TO_6PM, AFTER_6PM are the other options
   --return-date '11/08/2016' \
+  --leave-tod 'ANYTIME' \ (optional) ANYTIME is the defualt, BEFORE_NOON, NOON_TO_6PM, AFTER_6PM are the other options
   --passengers 2 \
   --individual-deal-price 50 \ # In dollars (optional)
   --total-deal-price 120 \ # In dollars (optional)
