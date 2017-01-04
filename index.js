@@ -49,13 +49,13 @@ process.argv.forEach((arg, i, argv) => {
     case "--leave-date":
       outboundDateString = argv[i + 1]
       break
-    case "--leave-tod":
+    case "--leave-time":
       outboundTimeOfDay = argv[i + 1 ]
       break
     case "--return-date":
       returnDateString = argv[i + 1]
       break
-    case "--return-tod":
+    case "--return-time":
       returnTimeOfDay = argv[i + 1]
       break
     case "--passengers":
