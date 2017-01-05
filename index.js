@@ -25,13 +25,21 @@ const fares = {
   return: []
 }
 
+// Flight Times
+const flightTimes = {
+  "anytime":   "ANYTIME",
+  "morning":   "BEFORE_NOON",
+  "afternoon": "NOON_TO_6PM",
+  "evening":   "AFTER_6PM"
+}
+
 // Command line options
 var originAirport
 var destinationAirport
 var outboundDateString
-var outboundTimeOfDay = "ANYTIME"
+var outboundTimeOfDay = flightTimes["anytime"]
 var returnDateString
-var returnTimeOfDay   = "ANYTIME"
+var returnTimeOfDay   = flightTimes["anytime"]
 var adultPassengerCount
 var individualDealPrice
 var totalDealPrice
@@ -50,13 +58,13 @@ process.argv.forEach((arg, i, argv) => {
       outboundDateString = argv[i + 1]
       break
     case "--leave-time":
-      outboundTimeOfDay = argv[i + 1 ]
+      outboundTimeOfDay = (flightTimes[argv[i + 1 ]] === undefined) ? flightTimes["anytime"] : flightTimes[argv[i + 1 ]]
       break
     case "--return-date":
       returnDateString = argv[i + 1]
       break
     case "--return-time":
-      returnTimeOfDay = argv[i + 1]
+      returnTimeOfDay = (flightTimes[argv[i + 1 ]] === undefined) ? flightTimes["anytime"] : flightTimes[argv[i + 1 ]]
       break
     case "--passengers":
       adultPassengerCount = argv[i + 1]

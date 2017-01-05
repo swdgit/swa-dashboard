@@ -46,9 +46,9 @@ swa \
   --from 'DAL' \
   --to 'LGA' \
   --leave-date '11/01/2016' \
-  --leave-time 'ANYTIME' \ (optional) ANYTIME is the default, BEFORE_NOON, NOON_TO_6PM, AFTER_6PM are the other options
+  --leave-time anytime \ (optional) anytime is the default, morning, afternoon, evening  are the other options
   --return-date '11/08/2016' \
-  --return-time 'ANYTIME' \ (optional) ANYTIME is the defualt, BEFORE_NOON, NOON_TO_6PM, AFTER_6PM are the other options
+  --return-time anytime \ (optional) anytime is the default, morning, afternoon, evening  are the other options
   --passengers 2 \
   --individual-deal-price 50 \ # In dollars (optional)
   --total-deal-price 120 \ # In dollars (optional)
