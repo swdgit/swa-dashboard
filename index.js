@@ -44,6 +44,7 @@ var adultPassengerCount
 var individualDealPrice
 var totalDealPrice
 var interval = 30 // In minutes
+var fareType = "DOLLARS"
 
 // Parse command line options (no validation, sorry!)
 process.argv.forEach((arg, i, argv) => {
@@ -65,6 +66,8 @@ process.argv.forEach((arg, i, argv) => {
       break
     case "--return-time":
       returnTimeOfDay = (flightTimes[argv[i + 1 ]] === undefined) ? flightTimes["anytime"] : flightTimes[argv[i + 1 ]]
+    case "--fare-type":
+      fareType = argv[i + 1].toUpperCase()
       break
     case "--passengers":
       adultPassengerCount = argv[i + 1]
@@ -351,6 +354,38 @@ const sendTextMessage = (message) => {
 }
 
 /**
+ * Format fare type price
+ *
+ * @param {Int} price
+ *
+ * @return {Str}
+ */
+const formatPrice = (price) => {
+  if (fareType === 'POINTS') {
+    return `${price} pts`
+  } else {
+    return `\$${price}`
+  }
+}
+
+/**
+ * Parse and return pricing from HTML markup
+ *
+ * @param {Str} priceMarkup
+ *
+ * @return {Int}
+ */
+const parsePriceMarkup = (priceMarkup) => {
+  if (fareType === 'POINTS') {
+    const matches = priceMarkup.text().split(',').join('')
+    return parseInt(matches)
+  } else {
+    const matches = priceMarkup.toString().match(/\$.*?(\d+)/)
+    return parseInt(matches[1])
+  }
+}
+
+/**
  * Fetch latest Southwest prices
  *
  * @return {Void}
@@ -365,7 +400,7 @@ const fetch = () => {
       outboundTimeOfDay,
       returnTimeOfDay,
       seniorPassengerCount: 0,
-      fareType: "DOLLARS",
+      fareType,
       originAirport,
       destinationAirport,
       outboundDateString,
@@ -374,14 +409,12 @@ const fetch = () => {
     })
     .find("#faresOutbound .product_price")
     .then((priceMarkup) => {
-      const matches = priceMarkup.toString().match(/\$.*?(\d+)/)
-      const price = parseInt(matches[1])
+      const price = parsePriceMarkup(priceMarkup)
       fares.outbound.push(price)
     })
     .find("#faresReturn .product_price")
     .then((priceMarkup) => {
-      const matches = priceMarkup.toString().match(/\$.*?(\d+)/)
-      const price = parseInt(matches[1])
+      const price = parsePriceMarkup(priceMarkup)
       fares.return.push(price)
     })
     .done(() => {
@@ -408,17 +441,17 @@ const fetch = () => {
         }
 
         if (outboundFareDiff > 0) {
-          outboundFareDiffString = chalk.green(`(down \$${Math.abs(outboundFareDiff)})`)
+          outboundFareDiffString = chalk.green(`(down ${formatPrice(Math.abs(outboundFareDiff))})`)
         } else if (outboundFareDiff < 0) {
-          outboundFareDiffString = chalk.red(`(up \$${Math.abs(outboundFareDiff)})`)
+          outboundFareDiffString = chalk.red(`(up ${formatPrice(Math.abs(outboundFareDiff))})`)
         } else if (outboundFareDiff === 0) {
           outboundFareDiffString = chalk.blue(`(no change)`)
         }
 
         if (returnFareDiff > 0) {
-          returnFareDiffString = chalk.green(`(down \$${Math.abs(returnFareDiff)})`)
+          returnFareDiffString = chalk.green(`(down ${formatPrice(Math.abs(returnFareDiff))})`)
         } else if (returnFareDiff < 0) {
-          returnFareDiffString = chalk.red(`(up \$${Math.abs(returnFareDiff)})`)
+          returnFareDiffString = chalk.red(`(up ${formatPrice(Math.abs(returnFareDiff))})`)
         } else if (returnFareDiff === 0) {
           returnFareDiffString = chalk.blue(`(no change)`)
         }
@@ -438,7 +471,7 @@ const fetch = () => {
         )
 
         if (awesomeDealIsAwesome) {
-          const message = `Deal alert! Combined total has hit \$${lowestOutboundFare + lowestReturnFare}. Individual fares are \$${lowestOutboundFare} (outbound) and \$${lowestReturnFare} (return).`
+          const message = `Deal alert! Combined total has hit ${formatPrice(lowestOutboundFare + lowestReturnFare)}. Individual fares are ${formatPrice(lowestOutboundFare)} (outbound) and ${formatPrice(lowestReturnFare)} (return).`
 
           // Party time
           dashboard.log([
@@ -451,8 +484,8 @@ const fetch = () => {
         }
 
         dashboard.log([
-          `Lowest fares for an outbound flight is currently \$${[lowestOutboundFare, outboundFareDiffString].filter(i => i).join(" ")}`,
-          `Lowest fares for a return flight is currently \$${[lowestReturnFare, returnFareDiffString].filter(i => i).join(" ")}`
+          `Lowest fares for an outbound flight is currently ${formatPrice([lowestOutboundFare, outboundFareDiffString].filter(i => i).join(" "))}`,
+          `Lowest fares for a return flight is currently ${formatPrice([lowestReturnFare, returnFareDiffString].filter(i => i).join(" "))}`
         ])
 
         dashboard.plot({
@@ -487,10 +520,11 @@ dashboard.settings([
   `Outbound Time: ${outboundTimeOfDay}`,
   `Return date: ${returnDateString}`,
   `Return Time: ${returnTimeOfDay}`,
+  `Fare type: ${fareType}`,
   `Passengers: ${adultPassengerCount}`,
   `Interval: ${pretty(interval * TIME_MIN)}`,
-  `Individual deal price: ${individualDealPrice ? `<= \$${individualDealPrice}` : "disabled"}`,
-  `Total deal price: ${totalDealPrice ? `<= \$${totalDealPrice}` : "disabled"}`,
+  `Individual deal price: ${individualDealPrice ? `<= ${formatPrice(individualDealPrice)}` : "disabled"}`,
+  `Total deal price: ${totalDealPrice ? `<= ${formatPrice(totalDealPrice)}` : "disabled"}`,
   `SMS alerts: ${isTwilioConfigured ? process.env.TWILIO_PHONE_TO : "disabled"}`
 ])
 
