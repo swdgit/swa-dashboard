@@ -66,6 +66,7 @@ process.argv.forEach((arg, i, argv) => {
       break
     case "--return-time":
       returnTimeOfDay = (flightTimes[argv[i + 1 ]] === undefined) ? flightTimes["anytime"] : flightTimes[argv[i + 1 ]]
+      break
     case "--fare-type":
       fareType = argv[i + 1].toUpperCase()
       break
